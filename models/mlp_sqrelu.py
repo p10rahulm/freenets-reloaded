@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class MLP(nn.Module):
+class MLP_SqReLU(nn.Module):
     def __init__(self, input_dim, hidden_dims, output_dim):
-        super(MLP, self).__init__()
+        super(MLP_SqReLU, self).__init__()
         layers = []
         dims = [input_dim] + hidden_dims
         for i in range(len(hidden_dims)):
@@ -16,7 +16,7 @@ class MLP(nn.Module):
     def forward(self, x):
         for layer in self.model:
             if isinstance(layer, nn.ReLU):
-                x = F.relu(x)  # ReLU activation
+                x = F.relu(x) ** 2  # Squared ReLU activation
             else:
                 x = layer(x)
         return x
