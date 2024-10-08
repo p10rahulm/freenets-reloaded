@@ -94,13 +94,13 @@ def run_experiment(hidden_dim, mlp_dim, degree, num_sims=5):
         os.makedirs(figures_dir, exist_ok=True)
 
         x_plot, y_true, y_pred_freenet = get_plotter_values(trained_freenet, degree, coefficient)
-        draw_monomial_plot(x_plot, y_true, y_pred_freenet, f"FreeNet_sim{sim+1}", degree, coefficient, save_path=os.path.join(figures_dir, f"FreeNet_degree{degree}_hidden{hidden_dim}_sim{sim+1}_{timestamp}.png"))
+        draw_monomial_plot(x_plot, y_true, y_pred_freenet, f"FreeNet", degree, coefficient, save_path=os.path.join(figures_dir, f"FreeNet_degree{degree}_hidden{hidden_dim}_sim{sim+1}_{timestamp}.png"))
 
         x_plot, y_true, y_pred_mlp = get_plotter_values(trained_mlp, degree, coefficient)
-        draw_monomial_plot(x_plot, y_true, y_pred_mlp, f"MLP_sim{sim+1}", degree, coefficient, save_path=os.path.join(figures_dir, f"MLP_degree{degree}_hidden{mlp_dim}_sim{sim+1}_{timestamp}.png"))
+        draw_monomial_plot(x_plot, y_true, y_pred_mlp, f"MLP", degree, coefficient, save_path=os.path.join(figures_dir, f"MLP_degree{degree}_hidden{mlp_dim}_sim{sim+1}_{timestamp}.png"))
 
         x_plot, y_true, y_pred_mlp_sqrelu = get_plotter_values(trained_mlp_sqrelu, degree, coefficient)
-        draw_monomial_plot(x_plot, y_true, y_pred_mlp_sqrelu, f"MLPSqReLU_sim{sim+1}", degree, coefficient, save_path=os.path.join(figures_dir, f"MLPSqReLU_degree{degree}_hidden{mlp_dim}_sim{sim+1}_{timestamp}.png"))
+        draw_monomial_plot(x_plot, y_true, y_pred_mlp_sqrelu, f"MLPSqReLU", degree, coefficient, save_path=os.path.join(figures_dir, f"MLPSqReLU_degree{degree}_hidden{mlp_dim}_sim{sim+1}_{timestamp}.png"))
 
     # Compute aggregate metrics
     for model in results:

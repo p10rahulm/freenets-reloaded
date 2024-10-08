@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import re
+
 
 def draw_monomial_plot(x, y_true, y_pred, model_name, degree, coefficient, save_path=None):
     # Set the style and color palette
@@ -14,6 +16,7 @@ def draw_monomial_plot(x, y_true, y_pred, model_name, degree, coefficient, save_
     sns.lineplot(x=x, y=y_true, label='Ground Truth', color='navy', linewidth=2)
     
     # Plot the prediction
+    # cleaned_model_name = re.sub(r"_sim\d+", "", model_name)
     sns.lineplot(x=x, y=y_pred, label=f'{model_name} Prediction', color='crimson', linewidth=2, linestyle='--')
     
     # Fill the area between the curves
