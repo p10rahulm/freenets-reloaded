@@ -18,7 +18,7 @@ from models.mlp import MLP
 from models.mlp_sqrelu import MLP_SqReLU
 from data_generators.sparse_polynomials import generate_sparse_polynomial_data
 from utilities.data_utilities import split_data
-from utilities.general_utilities import set_random_seed
+from utilities.general_utilities import set_random_seed, get_device
 from trainers.train_nn import train_model
 from testers.test_nn import test_model
 from optimizers.optimizer_params import get_optimizer_and_scheduler
@@ -42,6 +42,8 @@ def inference_function(model, coefficients, degrees, num_points=1000):
 
 
 def run_experiment(d=16, k=2, hidden_dim_freenet = 8, hidden_dim_mlp=None, num_sims=5):
+    device = get_device()
+    print(f"Using device: {device}")
     
     if hidden_dim_mlp is None:
         hidden_dim_mlp = [int(hidden_dim_freenet/2), int(hidden_dim_freenet/2)]
@@ -59,30 +61,37 @@ def run_experiment(d=16, k=2, hidden_dim_freenet = 8, hidden_dim_mlp=None, num_s
         # Parameters
         num_data_points = 10000
         batch_size = 32
-        num_epochs = 10
+        num_epochs = 100
         learning_rate = 0.01
         optimizer_name = "adamw"
         percentage_test_split = 0.01
 
-        # Generate data
+        # Generate data (on CPU)
         x, y, coefficients, degrees = generate_sparse_polynomial_data(d, k, num_data_points)
 
         # Split data
         x_train, x_test, y_train, y_test = split_data(x, y, test_size=percentage_test_split)
+        
+        # Convert to PyTorch tensors
+        x_train = torch.from_numpy(x_train).float()
+        y_train = torch.from_numpy(y_train).float()
+        x_test = torch.from_numpy(x_test).float()
+        y_test = torch.from_numpy(y_test).float()
 
         # Create data loaders
-        train_dataset = TensorDataset(torch.from_numpy(x_train), torch.from_numpy(y_train))
-        test_dataset = TensorDataset(torch.from_numpy(x_test), torch.from_numpy(y_test))
+        train_dataset = TensorDataset(x_train.to(device), y_train.to(device))
+        test_dataset = TensorDataset(x_test.to(device), y_test.to(device))
         train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
         test_loader = DataLoader(test_dataset, batch_size=batch_size)
+
 
         # Initialize models
         input_dim = 1
         output_dim = 1
 
-        freenet_model = FreeNet(input_dim, hidden_dim_freenet, output_dim)
-        mlp_model = MLP(input_dim, hidden_dim_mlp, output_dim)
-        mlp_sqrelu_model = MLP_SqReLU(input_dim, hidden_dim_mlp, output_dim)
+        freenet_model = FreeNet(input_dim, hidden_dim_freenet, output_dim).to(device)
+        mlp_model = MLP(input_dim, hidden_dim_mlp, output_dim).to(device)
+        mlp_sqrelu_model = MLP_SqReLU(input_dim, hidden_dim_mlp, output_dim).to(device)
 
         # Get optimizers and schedulers
         freenet_optimizer, freenet_scheduler = get_optimizer_and_scheduler(freenet_model, optimizer_name, learning_rate)
@@ -98,7 +107,8 @@ def run_experiment(d=16, k=2, hidden_dim_freenet = 8, hidden_dim_mlp=None, num_s
         trained_mlp_sqrelu = train_model(mlp_sqrelu_model, train_loader, num_epochs, mlp_sqrelu_optimizer, mlp_sqrelu_scheduler)
 
         # Test models
-        inference_func = lambda model, num_points: inference_function(model, coefficients, degrees, num_points)
+        inference_func = lambda model, num_points: inference_function(model, coefficients, degrees, num_points, device)
+
         print("Testing FreeNet:")
         freenet_results = test_model(trained_freenet, test_loader, inference_func)
         print("\nTesting MLP:")
