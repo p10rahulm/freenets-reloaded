@@ -144,7 +144,7 @@ def run_experiment(hidden_dim, mlp_dim, degree, num_sims=5):
 
 def main():
     torch.autograd.set_detect_anomaly(True)
-    
+    num_sims = 5
     configurations = [
         (2, [1, 1], 2), (2, [1, 1], 3), (2, [1, 1], 4),
         (4, [2, 2], 4), (4, [2, 2], 8), (4, [2, 2], 12), (4, [2, 2], 16),
@@ -155,7 +155,7 @@ def main():
 
     for hidden_dim, mlp_dim, degree in configurations:
         print(f"\nRunning experiment: hidden_dim={hidden_dim}, MLP_dim={mlp_dim}, degree={degree}")
-        results = run_experiment(hidden_dim, mlp_dim, degree, num_sims=1)
+        results = run_experiment(hidden_dim, mlp_dim, degree, num_sims=num_sims)
         all_results[f"hidden{hidden_dim}_mlp{mlp_dim[0]}{mlp_dim[1]}_degree{degree}"] = results
 
     # Save results
