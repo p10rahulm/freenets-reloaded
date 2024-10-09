@@ -50,8 +50,8 @@ def inference_function(model, coefficients, degrees, is_sine, num_points=1000, d
 
 
 def run_experiment(n=5, k=2, hidden_dim_freenet=8, hidden_dim_mlp=None, num_sims=5):
-    device = get_device()
-    # device = 'cpu' # cpu is actually faster for training!
+    # device = get_device()
+    device = 'cpu' # cpu is actually faster for training!
     print(f"Using device: {device}")
     
     if hidden_dim_mlp is None:
@@ -165,7 +165,7 @@ def run_experiment(n=5, k=2, hidden_dim_freenet=8, hidden_dim_mlp=None, num_sims
 
 def main():
     torch.autograd.set_detect_anomaly(False)
-    num_sims = 1
+    num_sims = 3
     
     # n, k, hidden_dim_freenet, hidden_dim_mlp
     configurations = [
