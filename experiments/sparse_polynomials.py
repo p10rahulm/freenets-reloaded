@@ -185,7 +185,7 @@ def main():
 
     for d, k, h_free, h_mlp in configurations:
         print(f"\nRunning experiment: d={d}, k={k}, freenet hdim = {h_free}, mlp hdim = {h_mlp}")
-        results = run_experiment(d, k, h_free, h_mlp, num_sims=1)
+        results = run_experiment(d, k, h_free, h_mlp, num_sims=5)
         all_results[f"d{d}_k{k}"] = results
 
     # Save results
