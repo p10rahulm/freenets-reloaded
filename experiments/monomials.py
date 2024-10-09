@@ -125,7 +125,7 @@ def run_experiment(hidden_dim, mlp_dim, degree, num_sims=5):
             'MLP_SqReLU': trained_mlp_sqrelu(torch.FloatTensor(x_plot).to(device)).cpu().detach().numpy()
         }
 
-        figures_dir = os.path.join(project_root, 'figures', 'monomials', f'degree{degree}_sim{sim+1}')
+        figures_dir = os.path.join(project_root, 'figures', 'monomials', f'degree{degree}_hidden{hidden_dim}_sim{sim+1}')
         save_monomial_plots(x_plot, y_true, y_pred_dict, coefficients[0], degrees[0], figures_dir)
 
     # Compute aggregate metrics
