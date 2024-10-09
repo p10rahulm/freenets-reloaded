@@ -69,8 +69,9 @@ def run_experiment(n=5, k=2, hidden_dim_freenet=8, hidden_dim_mlp=None, num_sims
 
         # Parameters
         num_data_points = 10000
+        # batch_size = 32
         batch_size = 32
-        num_epochs = 100
+        num_epochs = 250
         learning_rate = 0.01
         optimizer_name = "adamw"
         percentage_test_split = 0.01
@@ -183,7 +184,7 @@ def main():
         (32, 4, 20, [10,10]),
     ]
     configurations = [
-        (16, 2, 16, [8,8]), 
+        (8, 2, 24, [12,12]), 
     ]
     all_results = {}
 
