@@ -11,7 +11,7 @@ sys.path.insert(0, str(project_root))
 import numpy as np
 import torch
 from torch.utils.data import TensorDataset, DataLoader
-from models.freenet import FreeNet
+from models.freenet import FreeNetCapped as FreeNet
 from models.mlp import MLP
 from models.mlp_sqrelu import MLP_SqReLU
 from data_generators.interval_sparse_polynomials import generate_interval_sparse_polynomial_data
