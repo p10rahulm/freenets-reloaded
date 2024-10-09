@@ -142,7 +142,7 @@ def run_experiment(hidden_dim_freenet, hidden_dim_mlp, d, k, interval_start, int
 
 def main():
     torch.autograd.set_detect_anomaly(True)
-    num_sims = 1
+    num_sims = 3
     configurations = [
         (20, [10, 10], 16, 2, 0.17, 0.79),
         (24, [12, 12], 16, 3, 0.23, 0.59),
