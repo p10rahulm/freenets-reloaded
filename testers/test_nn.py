@@ -12,6 +12,7 @@ def compute_lp_metrics(y_true, y_pred, num_points=1000):
     return l1, l2, l3, l_inf
 
 def test_model(model, test_loader, inference_function, get_test_metrics=True, get_distance_metrics=True, num_points=1000):
+    device = next(model.parameters()).device
     model.eval()
     results = {
         'test_MSE': None, 'test_MAE': None, 'test_RMSE': None,
@@ -22,9 +23,10 @@ def test_model(model, test_loader, inference_function, get_test_metrics=True, ge
         y_true, y_pred = [], []
         with torch.no_grad():
             for x_batch, y_batch in test_loader:
+                x_batch, y_batch = x_batch.to(device), y_batch.to(device)
                 outputs = model(x_batch.float())
-                y_true.extend(y_batch.numpy())
-                y_pred.extend(outputs.numpy())
+                y_true.extend(y_batch.cpu().numpy())
+                y_pred.extend(outputs.cpu().numpy())
         
         y_true, y_pred = np.array(y_true), np.array(y_pred)
         

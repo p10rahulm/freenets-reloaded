@@ -17,28 +17,33 @@ from models.freenet import FreeNet
 from models.mlp import MLP
 from models.mlp_sqrelu import MLP_SqReLU
 from data_generators.sparse_polynomials import generate_sparse_polynomial_data
-from utilities.data_utilities import split_data
+from utilities.data_utilities import split_data, NumpyEncoder
 from utilities.general_utilities import set_random_seed, get_device
 from trainers.train_nn import train_model
 from testers.test_nn import test_model
 from optimizers.optimizer_params import get_optimizer_and_scheduler
 from plotters.sparse_polynomial_plotter import save_sparse_polynomial_plots
 
-def inference_function(model, coefficients, degrees, num_points=1000):
+import torch
+import numpy as np
+
+def inference_function(model, coefficients, degrees, num_points=1000, device=torch.device('cpu')):
+    # Generate x values on CPU
     x = np.linspace(0, 1, num_points).reshape(-1, 1)
+    x_tensor = torch.from_numpy(x).float().to(device)
     
-    # Ground truth
-    y_true = np.zeros_like(x)
+    # Ground truth calculation on GPU
+    y_true = torch.zeros_like(x_tensor)
     for coef, degree in zip(coefficients, degrees):
-        y_true += coef * x**degree
+        y_true += coef * x_tensor.pow(degree)
     
     # Model predictions
     model.eval()
     with torch.no_grad():
-        x_tensor = torch.from_numpy(x).float()
-        y_pred = model(x_tensor).numpy()
+        y_pred = model(x_tensor)
     
-    return x, y_true, y_pred
+    # Move results back to CPU for further processing or plotting
+    return x, y_true.cpu().numpy(), y_pred.cpu().numpy()
 
 
 def run_experiment(d=16, k=2, hidden_dim_freenet = 8, hidden_dim_mlp=None, num_sims=5):
@@ -109,6 +114,7 @@ def run_experiment(d=16, k=2, hidden_dim_freenet = 8, hidden_dim_mlp=None, num_s
         # Test models
         inference_func = lambda model, num_points: inference_function(model, coefficients, degrees, num_points, device)
 
+
         print("Testing FreeNet:")
         freenet_results = test_model(trained_freenet, test_loader, inference_func)
         print("\nTesting MLP:")
@@ -127,10 +133,16 @@ def run_experiment(d=16, k=2, hidden_dim_freenet = 8, hidden_dim_mlp=None, num_s
         for coef, degree in zip(coefficients, degrees):
             y_true += coef * x_plot**degree
         
+        # y_pred_dict = {
+        #     'FreeNet': trained_freenet(torch.FloatTensor(x_plot)).detach().numpy(),
+        #     'MLP': trained_mlp(torch.FloatTensor(x_plot)).detach().numpy(),
+        #     'MLP_SqReLU': trained_mlp_sqrelu(torch.FloatTensor(x_plot)).detach().numpy()
+        # }
+        
         y_pred_dict = {
-            'FreeNet': trained_freenet(torch.FloatTensor(x_plot)).detach().numpy(),
-            'MLP': trained_mlp(torch.FloatTensor(x_plot)).detach().numpy(),
-            'MLP_SqReLU': trained_mlp_sqrelu(torch.FloatTensor(x_plot)).detach().numpy()
+            'FreeNet': trained_freenet(torch.FloatTensor(x_plot).to(device)).cpu().detach().numpy(),
+            'MLP': trained_mlp(torch.FloatTensor(x_plot).to(device)).cpu().detach().numpy(),
+            'MLP_SqReLU': trained_mlp_sqrelu(torch.FloatTensor(x_plot).to(device)).cpu().detach().numpy()
         }
 
         figures_dir = os.path.join(project_root, 'figures', 'sparse_polynomials', f'd{d}_k{k}_sim{sim+1}')
@@ -168,10 +180,6 @@ def main():
         (32, 4, 20, [10,10]),
     ]
     
-    configurations = [
-        (8, 4, 12, [6,6]), 
-    ]
-
     all_results = {}
 
     for d, k, h_free, h_mlp in configurations:
@@ -184,10 +192,9 @@ def main():
     
     output_dir = os.path.join(project_root, 'outputs')
     os.makedirs(output_dir, exist_ok=True)
-    
     with open(os.path.join(output_dir, f"sparse_polynomials_{timestamp}.json"), 'w') as f:
-        json.dump(all_results, f, indent=2)
-
+        json.dump(all_results, f, indent=2, cls=NumpyEncoder)
+    
     print(f"\nResults saved to {os.path.join(output_dir, f'sparse_polynomials_{timestamp}.json')}")
 
 if __name__ == "__main__":

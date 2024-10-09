@@ -6,14 +6,16 @@ def L_infinity_loss(output, target):
     return torch.max(torch.abs(output - target))
 
 def train_model(model, train_loader, num_epochs, optimizer, scheduler):
+    device = next(model.parameters()).device
     # criterion = nn.MSELoss()
     criterion = L_infinity_loss
     
     model.train()
     for epoch in tqdm(range(num_epochs)):
         total_loss = 0
-        for x_batch, y_batch in tqdm(train_loader, desc="Training Batch"):
-        # for x_batch, y_batch in train_loader:
+        # for x_batch, y_batch in tqdm(train_loader, desc="Training Batch"):
+        for x_batch, y_batch in train_loader:
+            x_batch, y_batch = x_batch.to(device), y_batch.to(device)
             optimizer.zero_grad()
             outputs = model(x_batch.float())
             loss = criterion(outputs, y_batch.float())
