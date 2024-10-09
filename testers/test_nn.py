@@ -1,7 +1,6 @@
 import torch
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error
-from plotters.get_monomial_values import get_plotter_values
 
 def compute_lp_metrics(y_true, y_pred, num_points=1000):
     diff = np.abs(y_true - y_pred)
@@ -12,7 +11,7 @@ def compute_lp_metrics(y_true, y_pred, num_points=1000):
     l_inf = np.max(diff)
     return l1, l2, l3, l_inf
 
-def test_model(model, test_loader, degree, coefficient, get_test_metrics=True, get_distance_metrics=True):
+def test_model(model, test_loader, inference_function, get_test_metrics=True, get_distance_metrics=True, num_points=1000):
     model.eval()
     results = {
         'test_MSE': None, 'test_MAE': None, 'test_RMSE': None,
@@ -34,8 +33,8 @@ def test_model(model, test_loader, degree, coefficient, get_test_metrics=True, g
         results['test_MAE'] = mean_absolute_error(y_true, y_pred)
     
     if get_distance_metrics:
-        x_plot, y_true, y_pred = get_plotter_values(model, degree, coefficient, num_points=1000)
-        results['L1'], results['L2'], results['L3'], results['L_inf'] = compute_lp_metrics(y_true, y_pred)
+        x_plot, y_true, y_pred = inference_function(model, num_points)
+        results['L1'], results['L2'], results['L3'], results['L_inf'] = compute_lp_metrics(y_true, y_pred, num_points=num_points)
     
     # Print results
     print("Test Results:")

@@ -12,8 +12,8 @@ def train_model(model, train_loader, num_epochs, optimizer, scheduler):
     model.train()
     for epoch in tqdm(range(num_epochs)):
         total_loss = 0
-        # for x_batch, y_batch in tqdm(train_loader, desc="Training Batch"):
-        for x_batch, y_batch in train_loader:
+        for x_batch, y_batch in tqdm(train_loader, desc="Training Batch"):
+        # for x_batch, y_batch in train_loader:
             optimizer.zero_grad()
             outputs = model(x_batch.float())
             loss = criterion(outputs, y_batch.float())

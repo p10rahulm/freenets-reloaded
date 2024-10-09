@@ -9,6 +9,7 @@ import math
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
+import numpy as np
 import statistics
 import torch
 from torch.utils.data import TensorDataset, DataLoader
@@ -22,18 +23,34 @@ from trainers.train_nn import train_model
 from testers.test_nn import test_model
 from optimizers.optimizer_params import get_optimizer_and_scheduler
 from plotters.sparse_polynomial_plotter import save_sparse_polynomial_plots
-import numpy as np
 
-def run_experiment(d, k, num_sims=5):
+def inference_function(model, coefficients, degrees, num_points=1000):
+    x = np.linspace(0, 1, num_points).reshape(-1, 1)
+    
+    # Ground truth
+    y_true = np.zeros_like(x)
+    for coef, degree in zip(coefficients, degrees):
+        y_true += coef * x**degree
+    
+    # Model predictions
+    model.eval()
+    with torch.no_grad():
+        x_tensor = torch.from_numpy(x).float()
+        y_pred = model(x_tensor).numpy()
+    
+    return x, y_true, y_pred
+
+
+def run_experiment(d=16, k=2, hidden_dim_freenet = 8, hidden_dim_mlp=None, num_sims=5):
+    
+    if hidden_dim_mlp is None:
+        hidden_dim_mlp = [int(hidden_dim_freenet/2), int(hidden_dim_freenet/2)]
+    
     results = {
         'FreeNet': {'aggregate': {}, 'individual': []},
         'MLP': {'aggregate': {}, 'individual': []},
         'MLP_SqReLU': {'aggregate': {}, 'individual': []}
     }
-
-    # Calculate hidden dimensions
-    hidden_dim_freenet = int(2 * k * math.log2(d))
-    hidden_dim_mlp = [hidden_dim_freenet, hidden_dim_freenet]  # Two layers with the same number of neurons
 
     for sim in range(num_sims):
         print(f"\nSimulation {sim + 1}/{num_sims}")
@@ -42,7 +59,7 @@ def run_experiment(d, k, num_sims=5):
         # Parameters
         num_data_points = 10000
         batch_size = 32
-        num_epochs = 100
+        num_epochs = 10
         learning_rate = 0.01
         optimizer_name = "adamw"
         percentage_test_split = 0.01
@@ -81,12 +98,13 @@ def run_experiment(d, k, num_sims=5):
         trained_mlp_sqrelu = train_model(mlp_sqrelu_model, train_loader, num_epochs, mlp_sqrelu_optimizer, mlp_sqrelu_scheduler)
 
         # Test models
+        inference_func = lambda model, num_points: inference_function(model, coefficients, degrees, num_points)
         print("Testing FreeNet:")
-        freenet_results = test_model(trained_freenet, test_loader, coefficients, degrees)
+        freenet_results = test_model(trained_freenet, test_loader, inference_func)
         print("\nTesting MLP:")
-        mlp_results = test_model(trained_mlp, test_loader, coefficients, degrees)
+        mlp_results = test_model(trained_mlp, test_loader, inference_func)
         print("\nTesting MLP Square Relu:")
-        mlp_sqrelu_results = test_model(trained_mlp_sqrelu, test_loader, coefficients, degrees)
+        mlp_sqrelu_results = test_model(trained_mlp_sqrelu, test_loader, inference_func)
 
         # Store results
         results['FreeNet']['individual'].append(freenet_results)
@@ -124,16 +142,31 @@ def run_experiment(d, k, num_sims=5):
 
 def main():
     torch.autograd.set_detect_anomaly(True)
-
+    # d, k, hidden_dim_freenet, hidden_dim_mlp
     configurations = [
-        (4, 2), (8, 3), (16, 4), (32, 5), (64, 6)
+        (4, 2, 2, [1,1]), 
+        (4, 3, 4, [2,2]), 
+        (4, 4, 6, [3,3]), 
+        (8, 2, 6, [3,3]), 
+        (8, 3, 8, [4,4]), 
+        (8, 4, 12, [6,6]), 
+        (16, 2, 8, [4,4]), 
+        (16, 3, 12, [6,6]), 
+        (16, 4, 16, [8,8]), 
+        (32, 2, 10, [5,5]), 
+        (32, 3, 16, [8,8]), 
+        (32, 4, 20, [10,10]),
+    ]
+    
+    configurations = [
+        (8, 4, 12, [6,6]), 
     ]
 
     all_results = {}
 
-    for d, k in configurations:
-        print(f"\nRunning experiment: d={d}, k={k}")
-        results = run_experiment(d, k)
+    for d, k, h_free, h_mlp in configurations:
+        print(f"\nRunning experiment: d={d}, k={k}, freenet hdim = {h_free}, mlp hdim = {h_mlp}")
+        results = run_experiment(d, k, h_free, h_mlp, num_sims=1)
         all_results[f"d{d}_k{k}"] = results
 
     # Save results
