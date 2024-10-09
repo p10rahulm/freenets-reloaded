@@ -48,6 +48,7 @@ def inference_function(model, coefficients, degrees, num_points=1000, device=tor
 
 def run_experiment(d=16, k=2, hidden_dim_freenet = 8, hidden_dim_mlp=None, num_sims=5):
     device = get_device()
+    device = 'cpu' # cpu is actually faster for training!
     print(f"Using device: {device}")
     
     if hidden_dim_mlp is None:
