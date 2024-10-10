@@ -11,10 +11,12 @@ sys.path.insert(0, str(project_root))
 import numpy as np
 import torch
 from torch.utils.data import TensorDataset, DataLoader
-from models.freenet import FreeNetCapped as FreeNet
+# from models.freenet import FreeNetCapped as FreeNet
+from models.freenet import FreeNet
 from models.mlp import MLP
 from models.mlp_sqrelu import MLP_SqReLU
 from data_generators.interval_sparse_polynomials import generate_interval_sparse_polynomial_data
+from data_generators.sparse_polynomials import generate_sparse_polynomial_data as generate_interval_sparse_polynomial_data
 from utilities.data_utilities import split_data, NumpyEncoder
 from utilities.general_utilities import set_random_seed, get_device
 from trainers.train_nn import train_model
@@ -39,6 +41,7 @@ def inference_function(model, coefficients, degrees, interval, num_points=1000, 
 
 def run_experiment(hidden_dim_freenet, hidden_dim_mlp, d, k, interval_start, interval_end, num_sims=5):
     device = get_device()
+    device = 'cpu' # cpu is faster!
     print(f"Using device: {device}")
     
     results = {
@@ -54,15 +57,17 @@ def run_experiment(hidden_dim_freenet, hidden_dim_mlp, d, k, interval_start, int
         # Parameters
         num_data_points = 10000
         batch_size = 32
-        num_epochs = 250
-        learning_rate = 0.0001
+        num_epochs = 100
+        learning_rate = 0.01
         optimizer_name = "adamw"
         percentage_test_split = 0.01
 
         # Generate data
-        x, y, coefficients, degrees, interval = generate_interval_sparse_polynomial_data(
-            d, k, num_data_points, interval_start, interval_end)
+        # x, y, coefficients, degrees, interval = generate_interval_sparse_polynomial_data(
+        #     d, k, num_data_points, interval_start, interval_end)
 
+        x, y, coefficients, degrees = generate_interval_sparse_polynomial_data(
+            d, k, num_data_points)
         # Split data
         x_train, x_test, y_train, y_test = split_data(x, y, test_size=percentage_test_split)
         
@@ -92,8 +97,10 @@ def run_experiment(hidden_dim_freenet, hidden_dim_mlp, d, k, interval_start, int
         mlp_sqrelu_optimizer, mlp_sqrelu_scheduler = get_optimizer_and_scheduler(mlp_sqrelu_model, optimizer_name, learning_rate)
 
         # Train models
+
         print("Training FreeNet:")
         trained_freenet = train_model(freenet_model, train_loader, num_epochs, freenet_optimizer, freenet_scheduler)
+        print("Got till here 2.")
         print("Training MLP:")
         trained_mlp = train_model(mlp_model, train_loader, num_epochs, mlp_optimizer, mlp_scheduler)
         print("Training MLP Sq Relu:")
@@ -142,7 +149,7 @@ def run_experiment(hidden_dim_freenet, hidden_dim_mlp, d, k, interval_start, int
 
 def main():
     torch.autograd.set_detect_anomaly(True)
-    num_sims = 3
+    num_sims = 1
     configurations = [
         (20, [10, 10], 16, 2, 0.17, 0.79),
         (24, [12, 12], 16, 3, 0.23, 0.59),
@@ -155,7 +162,7 @@ def main():
         (36, [18, 18], 64, 4, 0.38, 0.79),
     ]
     configurations = [
-        (32, [16, 16], 64, 3, 0.11, 0.54),
+        (32, [16, 16], 8, 2, 0.11, 0.54),        
     ]
     all_results = {}
 
