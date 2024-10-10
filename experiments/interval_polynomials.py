@@ -88,7 +88,7 @@ def run_experiment(d=16, k=2, interval_start=0.25, interval_end=0.75, hidden_dim
         # Parameters
         num_data_points = 10000
         batch_size = 32
-        num_epochs = 10
+        num_epochs = 250
         learning_rate = 0.01
         optimizer_name = "adamw"
         percentage_test_split = 0.01
