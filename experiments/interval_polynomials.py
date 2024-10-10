@@ -184,7 +184,7 @@ def run_experiment(d=16, k=2, interval_start=0.25, interval_end=0.75, hidden_dim
 def main():
     torch.autograd.set_detect_anomaly(True)
     # d, k, hidden_dim_freenet, hidden_dim_mlp
-    num_sims = 1
+    num_sims = 5
     # configurations = [
     #     (4, 2, 2, [1,1] 0.17, 0.79), 
     #     (4, 3, 4, [2,2], 0.23, 0.59), 
@@ -224,9 +224,7 @@ def main():
     #     (32, [16, 16], 64, 3, 0.11, 0.54),
     #     (36, [18, 18], 64, 4, 0.38, 0.79),
     # ]
-    configurations = [
-        (4, 2, 24, [12,12], 0.11, 0.54), 
-    ]
+    
     all_results = {}
 
     for d, k, h_free, h_mlp, interval_start, interval_end in configurations:

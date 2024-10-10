@@ -56,5 +56,5 @@ def save_interval_sparse_polynomial_plots(x, y_true, y_pred_dict, coefficients, 
         draw_interval_sparse_polynomial_plot(x, y_true, {model_name: y_pred}, coefficients, degrees, interval, save_path)
     
     # Save combined plot
-    save_path = os.path.join(base_path, 'combined', 'combined_plot.png')
+    save_path = os.path.join(base_path, 'combined', 'combined_plot.pdf')
     draw_interval_sparse_polynomial_plot(x, y_true, y_pred_dict, coefficients, degrees, interval, save_path)
