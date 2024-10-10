@@ -24,27 +24,11 @@ from trainers.train_nn import train_model
 from testers.test_nn import test_model
 from optimizers.optimizer_params import get_optimizer_and_scheduler
 from plotters.sparse_polynomial_plotter import save_sparse_polynomial_plots
+from plotters.interval_sparse_polynomial_plotter import save_interval_sparse_polynomial_plots
 
 import torch
 import numpy as np
 
-def inference_function(model, coefficients, degrees, num_points=1000, device=torch.device('cpu')):
-    # Generate x values on CPU
-    x = np.linspace(0, 1, num_points).reshape(-1, 1)
-    x_tensor = torch.from_numpy(x).float().to(device)
-    
-    # Ground truth calculation on GPU
-    y_true = torch.zeros_like(x_tensor)
-    for coef, degree in zip(coefficients, degrees):
-        y_true += coef * x_tensor.pow(degree)
-    
-    # Model predictions
-    model.eval()
-    with torch.no_grad():
-        y_pred = model(x_tensor)
-    
-    # Move results back to CPU for further processing or plotting
-    return x, y_true.cpu().numpy(), y_pred.cpu().numpy()
 
 def inference_function(model, coefficients, degrees, interval, epsilon=3e-2, num_points=1000, device=torch.device('cpu')):
     # Generate x values
@@ -169,16 +153,8 @@ def run_experiment(d=16, k=2, interval_start=0.25, interval_end=0.75, hidden_dim
         results['MLP_SqReLU']['individual'].append(mlp_sqrelu_results)
 
         # Generate plots
-        x_plot = np.linspace(0, 1, 1000).reshape(-1, 1)
-        y_true = np.zeros_like(x_plot)
-        for coef, degree in zip(coefficients, degrees):
-            y_true += coef * x_plot**degree
-        
-        # y_pred_dict = {
-        #     'FreeNet': trained_freenet(torch.FloatTensor(x_plot)).detach().numpy(),
-        #     'MLP': trained_mlp(torch.FloatTensor(x_plot)).detach().numpy(),
-        #     'MLP_SqReLU': trained_mlp_sqrelu(torch.FloatTensor(x_plot)).detach().numpy()
-        # }
+        x_plot, y_true, _ = inference_func(trained_freenet, 1000)
+
         
         y_pred_dict = {
             'FreeNet': trained_freenet(torch.FloatTensor(x_plot).to(device)).cpu().detach().numpy(),
@@ -186,8 +162,10 @@ def run_experiment(d=16, k=2, interval_start=0.25, interval_end=0.75, hidden_dim
             'MLP_SqReLU': trained_mlp_sqrelu(torch.FloatTensor(x_plot).to(device)).cpu().detach().numpy()
         }
 
-        figures_dir = os.path.join(project_root, 'figures', 'sparse_polynomials', f'd{d}_k{k}_sim{sim+1}')
-        save_sparse_polynomial_plots(x_plot, y_true, y_pred_dict, coefficients, degrees, figures_dir)
+        figures_dir = os.path.join(project_root, 'figures', 'interval_sparse_polynomials', 
+                           f'd{d}_k{k}_int{interval_start:.2f}_{interval_end:.2f}_sim{sim+1}')
+        save_interval_sparse_polynomial_plots(x_plot, y_true, y_pred_dict, coefficients, degrees, [interval_start, interval_end], figures_dir)
+
 
     # Compute aggregate metrics
     for model in results:
