@@ -186,21 +186,27 @@ def main():
         (32, 4, 128, [64,64]),
     ]
     all_results = {}
+    
+    # Prepare output file
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_dir = os.path.join(project_root, 'outputs')
+    os.makedirs(output_dir, exist_ok=True)
+    output_file = os.path.join(output_dir, f"sparse_fourier_polynomials_{timestamp}.json")
 
     for n, k, h_free, h_mlp in configurations:
         print(f"\nRunning experiment: n={n}, k={k}, freenet hdim = {h_free}, mlp hdim = {h_mlp}")
         results = run_experiment(n, k, h_free, h_mlp, num_sims=num_sims)
         all_results[f"n{n}_k{k}"] = results
 
-    # Save results
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    
-    output_dir = os.path.join(project_root, 'outputs')
-    os.makedirs(output_dir, exist_ok=True)
-    with open(os.path.join(output_dir, f"sparse_fourier_polynomials_{timestamp}.json"), 'w') as f:
-        json.dump(all_results, f, indent=2, cls=NumpyEncoder)
-    
-    print(f"\nResults saved to {os.path.join(output_dir, f'sparse_fourier_polynomials_{timestamp}.json')}")
+        # Save results periodically
+        temp_output_file = output_file + '.tmp'
+        with open(temp_output_file, 'w') as f:
+            json.dump(all_results, f, indent=2, cls=NumpyEncoder)
+        os.replace(temp_output_file, output_file)
+        print(f"\nResults saved to {output_file}")
+        
+    # Final message
+    print(f"\nAll results saved to {output_file}")
 
 if __name__ == "__main__":
     main()
