@@ -16,7 +16,7 @@ from torch.utils.data import TensorDataset, DataLoader
 from models.freenet import FreeNet
 from models.mlp import MLP
 from models.mlp_sqrelu import MLP_SqReLU
-from data_generators.sparse_polynomials import generate_sparse_polynomial_data
+# from data_generators.sparse_polynomials import generate_sparse_polynomial_data
 from data_generators.interval_sparse_polynomials import generate_interval_sparse_polynomial_data as generate_sparse_polynomial_data
 from utilities.data_utilities import split_data, NumpyEncoder
 from utilities.general_utilities import set_random_seed, get_device
@@ -104,7 +104,7 @@ def run_experiment(d=16, k=2, interval_start=0.25, interval_end=0.75, hidden_dim
         y_train = torch.from_numpy(y_train).float()
         x_test = torch.from_numpy(x_test).float()
         y_test = torch.from_numpy(y_test).float()
-
+        
         # Create data loaders
         train_dataset = TensorDataset(x_train.to(device), y_train.to(device))
         test_dataset = TensorDataset(x_test.to(device), y_test.to(device))
@@ -171,12 +171,16 @@ def run_experiment(d=16, k=2, interval_start=0.25, interval_end=0.75, hidden_dim
     for model in results:
         for metric in results[model]['individual'][0].keys():
             values = [sim[metric] for sim in results[model]['individual'] if sim[metric] is not None]
+            # Convert values to NumPy array
+            values = np.array(values, dtype=np.float64)
+            # Remove NaN and Inf values
+            values = values[~np.isnan(values) & ~np.isinf(values)]
             if values:
                 results[model]['aggregate'][metric] = {
-                    'mean': statistics.mean(values),
+                    'mean': np.mean(values),
                     'min': min(values),
                     'max': max(values),
-                    'std_dev': statistics.stdev(values) if len(values) > 1 else None
+                    'std_dev': np.std(values, ddof=1) if len(values) > 1 else None
                 }
 
     return results

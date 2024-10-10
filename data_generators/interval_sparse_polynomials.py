@@ -53,8 +53,6 @@ def generate_interval_sparse_polynomial_data(
     :return: x, y, coefficients, degrees, interval
     """
     x = np.random.uniform(0, 1, (num_data_points, 1))
-    interval_start = 0.03
-    interval_end = 0.97
     # Generate degrees and coefficients for the polynomial
     degrees = [d]  # Ensure the highest degree term is included
     degrees.extend(np.random.randint(1, d, size=k-1))  # Other degrees
