@@ -5,6 +5,8 @@ This repository contains a collection of experiments that explore the ability of
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [Main Results](#results)
+- [Function Plots](#function-plots)
 - [Project Structure](#project-structure)
 - [Dependencies](#dependencies)
 - [Getting Started](#getting-started)
