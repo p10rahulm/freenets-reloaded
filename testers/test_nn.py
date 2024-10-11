@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from sklearn.metrics import mean_squared_error, mean_absolute_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error, root_mean_squared_error
 
 def compute_lp_metrics(y_true, y_pred, num_points=1000):
     diff = np.abs(y_true - y_pred)
@@ -30,10 +30,15 @@ def test_model(model, test_loader, inference_function, get_test_metrics=True, ge
         
         y_true, y_pred = np.array(y_true), np.array(y_pred)
         
-        results['test_MSE'] = mean_squared_error(y_true, y_pred)
-        results['test_RMSE'] = np.sqrt(results['test_MSE'])
-        results['test_MAE'] = mean_absolute_error(y_true, y_pred)
-    
+        # Proceed only if no NaNs are found
+        if not np.isnan(y_pred).any():
+            results['test_RMSE'] = root_mean_squared_error(y_true, y_pred)
+            results['test_MSE'] = np.square(results['test_RMSE'])
+            results['test_MAE'] = mean_absolute_error(y_true, y_pred)
+        else:
+            print("NaN values detected in predictions. Cannot compute test metrics.")
+            
+            
     if get_distance_metrics:
         x_plot, y_true, y_pred = inference_function(model, num_points)
         results['L1'], results['L2'], results['L3'], results['L_inf'] = compute_lp_metrics(y_true, y_pred, num_points=num_points)
