@@ -104,10 +104,6 @@ For trigonometric polynomials, FreeNet again demonstrated superior performance a
 
 Our experiments confirm that FreeNet provides a more expressive and efficient architecture for representing monomials, sparse polynomials, and trigonometric polynomials compared to traditional MLPs. FreeNet consistently achieves lower MSE, demonstrating higher accuracy with fewer parameters, which validates our theoretical analysis.
 
-Certainly! Here's how you can structure the **Function Plots** section in your `README.md` with two images side by side for each case, assuming you have the images in the paths you've specified.
-
----
-
 ## Function Plots
 
 Next, we showcase some plots demonstrating the power of FreeNet for function representation. Each plot compares the predictions of different models (FreeNet, MLP, and MLP SqReLU) against the true target functions, providing a visual insight into how well FreeNet approximates the target function.
@@ -145,23 +141,21 @@ For trigonometric polynomials, FreeNet continues to outperform traditional MLPs 
 - **Left**: Trigonometric polynomial with frequency 4 and 2 terms with 8 hidden neurons. FreeNet accurately tracks both sine and cosine components with fewer neurons.
 - **Right**: Trigonometric polynomial with frequency 8 and 4 terms with 24 hidden neurons. FreeNet outperforms MLP in both accuracy and efficiency, requiring fewer neurons to approximate complex functions.
 
+
+
 ### Polynomials Between Intervals
 
-Finally, we investigate polynomials defined over specific intervals. FreeNet excels at representing such functions, providing smooth transitions at the interval boundaries while maintaining accuracy.
+In this section, we investigate polynomials defined over specific intervals. FreeNet excels at representing such functions, providing smooth transitions at the interval boundaries while maintaining accuracy. The following plots compare the predictions of FreeNet, MLP, and MLP SqReLU against the ground truth for interval-based sparse polynomials. 
 
-#### Interval Polynomial 1 (Left) | Interval Polynomial 2 (Right)
+#### Degree 4, Sparsity 3, Neurons 12 (Left) | Degree 8, Sparsity 4, Neurons 10 (Right)
 
-<img src="figures/for_readme/interval_polynomial1.png" alt="Interval Polynomial 1" width="45%"/> <img src="figures/for_readme/interval_polynomial2.png" alt="Interval Polynomial 2" width="45%"/>
+<img src="figures/for_readme/interval_poly1.png" alt="Degree 4, Sparsity 3 Polynomial" width="45%"/> <img src="figures/for_readme/interval_poly2.png" alt="Degree 8, Sparsity 4 Polynomial" width="45%"/>
 
-- **Left**: FreeNet's approximation of an interval polynomial demonstrates smooth transitions at the boundaries, which traditional MLPs struggle to achieve.
-- **Right**: A more complex interval polynomial, where FreeNet maintains accuracy with fewer parameters compared to baseline MLP architectures.
+- **Left**: For a degree 4 polynomial with sparsity 3 and neurons 12, FreeNet achieves a very low MSE of **4.57e-06**, significantly outperforming both MLP (MSE: **3.25e-04**) and MLP SqReLU (MSE: **5.13e-04**). The interval polynomial is defined as \( 0.98x^4 - 0.85x^1 + 0.95x^3 \) on \( [0.23, 0.59] \), where FreeNet closely follows the true function.
+  
+- **Right**: For a more complex degree 8 polynomial with sparsity 4 and neurons 10, FreeNet achieves an MSE of **4.83e-05**, closely matching MLP's performance (MSE: **4.81e-05**) while far outperforming MLP SqReLU (MSE: **5.71e-03**). The polynomial is \( 0.43x^8 - 0.87x^1 - 0.49x^3 - 0.64x^4 \) on \( [0.35, 0.58] \). FreeNet shows superior efficiency in capturing the behavior of the polynomial within the interval.
 
----
-
-This structure not only highlights the power of FreeNet but also presents side-by-side visual comparisons of its performance relative to traditional models. Each image showcases a different aspect of FreeNet’s superior function approximation abilities.
-
-
-
+In both cases, FreeNet demonstrates the ability to approximate interval-based polynomials with a higher degree of accuracy and fewer neurons, particularly in comparison to traditional MLP models.
 
 ## Project Structure
 
