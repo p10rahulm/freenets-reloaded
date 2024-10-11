@@ -1,4 +1,3 @@
-
 # Freenets Function Approximation Experiments
 
 This repository contains a collection of experiments that explore the ability of different neural network architectures to approximate various mathematical functions, including monomials, sparse polynomials, trigonometric polynomials, and interval-defined polynomials.
@@ -162,4 +161,3 @@ python experiments/interval_polynomials.py
 
 - **Outputs**: The experiment results are saved in the `outputs/` directory as JSON files with timestamps.
 - **Figures**: Plots of the true functions versus the neural network approximations are saved in the `figures/` directory, organized by experiment.
-
