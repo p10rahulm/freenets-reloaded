@@ -104,6 +104,64 @@ For trigonometric polynomials, FreeNet again demonstrated superior performance a
 
 Our experiments confirm that FreeNet provides a more expressive and efficient architecture for representing monomials, sparse polynomials, and trigonometric polynomials compared to traditional MLPs. FreeNet consistently achieves lower MSE, demonstrating higher accuracy with fewer parameters, which validates our theoretical analysis.
 
+Certainly! Here's how you can structure the **Function Plots** section in your `README.md` with two images side by side for each case, assuming you have the images in the paths you've specified.
+
+---
+
+## Function Plots
+
+Next, we showcase some plots demonstrating the power of FreeNet for function representation. Each plot compares the predictions of different models (FreeNet, MLP, and MLP SqReLU) against the true target functions, providing a visual insight into how well FreeNet approximates the target function.
+
+### Monomials
+
+Below are plots comparing the model predictions with the true monomials of various degrees \( N \) using \( n \) hidden neurons. These plots highlight how FreeNet accurately approximates high-degree monomials even with a logarithmic number of neurons relative to the degree \( N \). 
+
+#### Degree 4 Monomial (Left) | Degree 16 Monomial (Right)
+
+<img src="figures/for_readme/monomial1.png" alt="Degree 4 Monomial" width="45%"/> <img src="figures/for_readme/monomial2.png" alt="Degree 16 Monomial" width="45%"/>
+
+- **Left**: Degree 4 monomial with 2 hidden nodes approximation by FreeNet and baselines. FreeNet closely matches the true function with fewer neurons.
+- **Right**: Degree 16 monomial represented with 4 hidden nodes shows FreeNet maintaining accuracy even as the degree increases, with significantly fewer neurons than MLP.
+
+### Sparse Polynomials
+
+Next, we study the representation of sparse polynomials with varying degrees \( N \) and sparsity levels \( k \). The following plots compare the model predictions with the true sparse polynomials. Each configuration uses a specific number of hidden neurons \( n \) in FreeNet and the baseline MLP architectures for comparison.
+
+#### Degree 16, Sparsity 2 Polynomial (Left) | Degree 32, Sparsity 4 Polynomial (Right)
+
+<img src="figures/for_readme/sparse_polynomial1.png" alt="Degree 16 Sparse Polynomial" width="45%"/> <img src="figures/for_readme/sparse_polynomial2.png" alt="Degree 32 Sparse Polynomial" width="45%"/>
+
+- **Left**: FreeNet’s performance on a sparse polynomial with degree 16 and sparsity 2 with 8 hidden neurons. The model accurately approximates the polynomial with fewer neurons.
+- **Right**: Degree 32 and sparsity 4 polynomial with 20 hidden neurons, where FreeNet demonstrates efficiency in learning higher-degree sparse polynomials compared to the baselines.
+
+### Trigonometric Polynomials
+
+For trigonometric polynomials, FreeNet continues to outperform traditional MLPs in learning representations. The following plots demonstrate the model's ability to approximate sine and cosine functions in the polynomial.
+
+#### Frequency 4, Terms 2 Polynomial (Left) | Frequency 8, Terms 4 Polynomial (Right)
+
+<img src="figures/for_readme/trig_polynomial1.png" alt="Frequency 4 Trig Polynomial" width="45%"/> <img src="figures/for_readme/trig_polynomial2.png" alt="Frequency 8 Trig Polynomial" width="45%"/>
+
+- **Left**: Trigonometric polynomial with frequency 4 and 2 terms with 8 hidden neurons. FreeNet accurately tracks both sine and cosine components with fewer neurons.
+- **Right**: Trigonometric polynomial with frequency 8 and 4 terms with 24 hidden neurons. FreeNet outperforms MLP in both accuracy and efficiency, requiring fewer neurons to approximate complex functions.
+
+### Polynomials Between Intervals
+
+Finally, we investigate polynomials defined over specific intervals. FreeNet excels at representing such functions, providing smooth transitions at the interval boundaries while maintaining accuracy.
+
+#### Interval Polynomial 1 (Left) | Interval Polynomial 2 (Right)
+
+<img src="figures/for_readme/interval_polynomial1.png" alt="Interval Polynomial 1" width="45%"/> <img src="figures/for_readme/interval_polynomial2.png" alt="Interval Polynomial 2" width="45%"/>
+
+- **Left**: FreeNet's approximation of an interval polynomial demonstrates smooth transitions at the boundaries, which traditional MLPs struggle to achieve.
+- **Right**: A more complex interval polynomial, where FreeNet maintains accuracy with fewer parameters compared to baseline MLP architectures.
+
+---
+
+This structure not only highlights the power of FreeNet but also presents side-by-side visual comparisons of its performance relative to traditional models. Each image showcases a different aspect of FreeNet’s superior function approximation abilities.
+
+
+
 
 ## Project Structure
 
