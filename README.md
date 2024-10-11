@@ -26,6 +26,10 @@ The primary goal of these experiments is to investigate how different neural net
 
 We generate datasets based on different types of functions and train the neural networks to learn these functions from data. The experiments aim to evaluate the models' ability to generalize and accurately approximate the target functions.
 
+
+## Results
+
+
 ## Project Structure
 
 The repository is organized as follows:
