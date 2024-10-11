@@ -175,7 +175,7 @@ def run_experiment(d=16, k=2, interval_start=0.25, interval_end=0.75, hidden_dim
             values = np.array(values, dtype=np.float64)
             # Remove NaN and Inf values
             values = values[~np.isnan(values) & ~np.isinf(values)]
-            if values:
+            if values.size > 0:
                 results[model]['aggregate'][metric] = {
                     'mean': np.mean(values),
                     'min': min(values),
@@ -188,7 +188,7 @@ def run_experiment(d=16, k=2, interval_start=0.25, interval_end=0.75, hidden_dim
 def main():
     torch.autograd.set_detect_anomaly(True)
     # d, k, hidden_dim_freenet, hidden_dim_mlp
-    num_sims = 5
+    num_sims = 3
     # configurations = [
     #     (4, 2, 2, [1,1] 0.17, 0.79), 
     #     (4, 3, 4, [2,2], 0.23, 0.59), 
